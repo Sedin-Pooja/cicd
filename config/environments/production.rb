@@ -1,6 +1,6 @@
 require "active_support/core_ext/integer/time"
 
-Rails.application.confgure do
+Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -13,7 +13,8 @@ Rails.application.confgure do
   config.consider_all_requests_local = false
 
   # Turn on fragment caching in view templates.
-  config.action_controller.perform_caching = 
+  config.action_controller.perform_caching = true 
+  config.cache_store = :memory_store
 
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }

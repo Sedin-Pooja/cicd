@@ -35,3 +35,4 @@
 Dockerfile
 docker-compose.yaml
 log/development.log
+/config/credentials/production.key
