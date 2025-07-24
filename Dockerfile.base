@@ -3,6 +3,11 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C | \
+    gpg --dearmor -o /etc/apt/keyrings/ubuntu.gpg && \
+    chmod a+r /etc/apt/keyrings/ubuntu.gpg
+
 RUN apt-get update && apt-get install -y \
   curl gnupg build-essential libssl-dev libreadline-dev zlib1g-dev \
    default-libmysqlclient-dev libpq-dev nodejs yarn git \
@@ -10,7 +15,7 @@ RUN apt-get update && apt-get install -y \
   rm -rf /var/lib/apt/lists/*
 
 
-# Install Ruby (via rbenv or rvm, here's a simple way using rbenv)
+# Install Ruby (via rbenv)
 RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv && \
   echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc && \
   echo 'eval "$(rbenv init -)"' >> ~/.bashrc && \
@@ -19,14 +24,11 @@ RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv && \
 
 ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
 
-# Install Ruby version
 ENV RUBY_VERSION=3.3.2
 RUN rbenv install ${RUBY_VERSION} && \
     rbenv global ${RUBY_VERSION}
 
-# Install Bundler and Rails
 RUN gem install bundler rails
 
-# Set working directory
 WORKDIR /app
 
