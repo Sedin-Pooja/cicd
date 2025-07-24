@@ -1,4 +1,4 @@
-FROM ruby-3.3.2-v1 
+FROM ruby-3.3.2
 WORKDIR /app
 COPY Gemfile* ./
 RUN bundle install
