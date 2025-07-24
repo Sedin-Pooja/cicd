@@ -1,34 +1,22 @@
-# Dockerfile.base
-FROM ubuntu:22.04
+FROM ruby:3.3.2
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8 \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
-RUN mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C | \
-    gpg --dearmor -o /etc/apt/keyrings/ubuntu.gpg && \
-    chmod a+r /etc/apt/keyrings/ubuntu.gpg
+# Install any required Linux packages (example: nodejs & yarn)
+RUN apt-get update -qq && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    yarn \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y \
-  curl gnupg build-essential libssl-dev libreadline-dev zlib1g-dev \
-   default-libmysqlclient-dev libpq-dev nodejs yarn git \
-  libffi-dev libyaml-dev tzdata vim && \
-  rm -rf /var/lib/apt/lists/*
-
-
-# Install Ruby (via rbenv)
-RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv && \
-  echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc && \
-  echo 'eval "$(rbenv init -)"' >> ~/.bashrc && \
-  git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build && \
-  ~/.rbenv/plugins/ruby-build/install.sh
-
-ENV PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"
-
-ENV RUBY_VERSION=3.3.2
-RUN rbenv install ${RUBY_VERSION} && \
-    rbenv global ${RUBY_VERSION}
-
-RUN gem install bundler rails
-
+# Set the working directory inside the container
 WORKDIR /app
 
+
+# Install bundler
+RUN gem install bundler
+
+CMD ["irb"]
