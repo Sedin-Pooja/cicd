@@ -3,10 +3,10 @@ os: linux
 
 hooks:
   ApplicationStop:
-    - location: script/stop.sh
+    - location: stop.sh
       timeout: 300
       runas: ec2-user
   AfterInstall:
-    - location: script/start.sh
+    - location: start.sh
       timeout: 300
       runas: ec2-user
