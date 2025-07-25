@@ -2,7 +2,7 @@
 set -e
 
 AWS_REGION="ap-south-1"
-ACCOUNT_ID="916773321"
+ACCOUNT_ID="156916773321"
 REPO_NAME="pooja/rails_app"
 IMAGE_TAG="latest"
 CONTAINER_NAME="mycontainer-cicd"
