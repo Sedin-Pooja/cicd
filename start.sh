@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-
+cd cicd/
 AWS_REGION="ap-south-1"
 ACCOUNT_ID="156916773321"
 REPO_NAME="pooja/rails_app"
