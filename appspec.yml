@@ -3,6 +3,7 @@ os: linux
 files:
   - source: .
     destination: /home/ec2-user/cicd
+    overwrite: true
 hooks:
   BeforeInstall:
     - location: cleanup.sh
