@@ -15,16 +15,9 @@ echo "Pulling image: $IMAGE_URI"
 docker pull $IMAGE_URI
 
 echo "Running container: $CONTAINER_NAME"
-mkdir -p /tmp/config
-aws ssm get-parameter --name "/pooja-cicd/master.key" --with-decryption --query "Parameter.Value" --output text > /tmp/config/master.key
+docker run -d --env-file /home/ec2-user/cicd/.env -p 3000:3000 --name $CONTAINER_NAME $IMAGE_URI
 
-aws ssm get-parameter \
-  --name "/pooja-cicd/master.key" \
-  --with-decryption \
-  --query "Parameter.Value" \
-  --output text > config/master.key
-export RAILS_MASTER_KEY=$(cat config/master.key)
-docker run -d -e RAILS_MASTER_KEY="$RAILS_MASTER_KEY" -p 3000:3000 --name $CONTAINER_NAME $IMAGE_URI
+
 
 
 
