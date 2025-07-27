@@ -15,4 +15,4 @@ echo "Pulling image: $IMAGE_URI"
 docker pull $IMAGE_URI
 
 echo "Running container: $CONTAINER_NAME"
-docker run -d --name $CONTAINER_NAME $IMAGE_URI
+docker run -d -p 3000:3000 --name $CONTAINER_NAME $IMAGE_URI
