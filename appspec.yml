@@ -4,6 +4,9 @@ files:
   - source: .
     destination: /home/ec2-user/cicd
 hooks:
+  BeforeInstall:
+    - location: cleanup.sh
+      runas: ec2-user
   ApplicationStop:
     - location: stop.sh
       timeout: 300
