@@ -20,7 +20,7 @@ export RAILS_MASTER_KEY=$(aws ssm get-parameter \
   --name "/pooja-cicd/master.key" \
   --with-decryption \
   --query "Parameter.Value" \
-  --output text > config/master.key
+  --output text) > config/master.key
 docker run -d -e RAILS_MASTER_KEY=$RAILS_MASTER_KEY -p 3000:3000 --name $CONTAINER_NAME $IMAGE_URI
 
 
