@@ -15,7 +15,7 @@ echo "Pulling image: $IMAGE_URI"
 docker pull $IMAGE_URI
 
 echo "Running container: $CONTAINER_NAME"
-mkdir -p config
+sudo mkdir -p config
 aws ssm get-parameter \
   --name "/pooja-cicd/master.key" \
   --with-decryption \
