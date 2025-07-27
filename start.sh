@@ -25,6 +25,9 @@ RAILS_MASTER_KEY=$(aws ssm get-parameter \
   --output text)
 
 mkdir -p "$APP_DIR/config"
+chmod 755 "$APP_DIR/config"
+chown ec2-user:ec2-user "$APP_DIR/config"
+
 
 echo "$RAILS_MASTER_KEY" > "$MASTER_KEY_PATH"
 chmod 600 "$MASTER_KEY_PATH"
