@@ -18,9 +18,6 @@ export RAILS_MASTER_KEY=$(aws ssm get-parameter \
   --query "Parameter.Value" \
   --output text)
 
-echo "Stopping any existing container"
-docker rm -f "$CONTAINER_NAME" || true
-
 echo "Running container"
 docker run -d \
   -e RAILS_MASTER_KEY="$RAILS_MASTER_KEY" \
