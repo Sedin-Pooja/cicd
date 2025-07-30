@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  parameter-store:
+    DOCKER_USERNAME: /pooja-cicd/docker-credentials/username
+    DOCKER_PASSWORD: /pooja-cicd/docker-credentials/password
+
+phases:
+  pre_build:
+    commands:
+      - echo docker login...
+      - echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+  
+  build:
+    commands:
+      - echo Building Docker base image...
+      - docker build -f Dockerfile.base -t ruby-3.3.2-v1 .
+      - echo Building Docker image...
+      - docker build -t myrailsapp -f Dockerfile.app .
+      - echo Login to ECR 
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 156916773321.dkr.ecr.ap-south-1.amazonaws.com
+      - echo tagging image...
+      - docker tag myrailsapp:latest 156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja/rails_app:latest
+       
+  post_build:
+    commands:
+      - echo Pushing image to ecr... 
+      - docker push 156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja/rails_app:latest
+      - echo Writing image definition file...
+      - printf '[{"name":"mycontainer-cicd","imageUri":"156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja/rails_app:latest"}]' > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+
+base-directory: "."
