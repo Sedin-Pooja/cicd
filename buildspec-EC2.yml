@@ -4,7 +4,6 @@ env:
   variables:
     AWS_REGION: "ap-south-1"
     ECR_ACCOUNT_ID: "156916773321"
-    ECR_REPO_NAME: "pooja/rails_app"
     ECR_URI: "156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja/rails_app"
     IMAGE_TAG: "latest"
     CONTAINER_NAME: "mycontainer-cicd"
@@ -35,3 +34,4 @@ artifacts:
     - cleanup.sh
     - stop.sh 
     - start.sh
+
