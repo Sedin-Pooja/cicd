@@ -1,0 +1,61 @@
+#final version
+
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "ap-south-1"
+    ECR_ACCOUNT_ID: "156916773321"
+    ECR_URI: "156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja/rails_app"
+    CONTAINER_NAME: "mycontainer-cicd"
+    CLUSTER_NAME: "pooja-ecs-cluster"             
+    SERVICE_NAME: "ror-cicd-service"         
+    TASK_FAMILY: "pooja-buggy-td"  
+phases:
+  pre_build:
+    commands:
+      - echo Installing dependencies...
+      - yum install -y jq
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URI
+      - echo Setting IMAGE_TAG to Git commit ID...
+      - export IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo IMAGE_TAG=$IMAGE_TAG
+
+  build:
+    commands:
+      - echo Building application Docker image...
+      - docker build -t myrailsapp -f Dockerfile.app .
+      - echo Tagging image with $IMAGE_TAG...
+      - docker tag myrailsapp:latest $ECR_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Pushing image to Amazon ECR...
+      - docker push $ECR_URI:$IMAGE_TAG
+      - echo Fetching latest task definition revision...
+      - aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --region $AWS_REGION --query "taskDefinition" --output json > old-task-def.json
+
+      - echo Replacing image in task definition...
+      - |
+        IMAGE_PATH="${ECR_URI}:${IMAGE_TAG}"
+        UPDATED_TASK=$(cat old-task-def.json | jq --arg IMAGE "$IMAGE_PATH" --arg NAME "$CONTAINER_NAME" '.containerDefinitions |= map(if .name == $NAME then .image = $IMAGE else . end) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+        echo "$UPDATED_TASK" > new-task-def.json
+
+      - echo Registering new task definition revision...
+      - |
+        TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://new-task-def.json \
+          --region $AWS_REGION \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+
+        echo Registered task definition: $TASK_DEF_ARN
+
+      - echo Updating ECS service with new task definition...
+      - aws ecs update-service --cluster "$CLUSTER_NAME" --service "$SERVICE_NAME" --task-definition "$TASK_DEF_ARN" --force-new-deployment --region "$AWS_REGION"
+
+
+
+
+
