@@ -5,5 +5,6 @@ RUN bundle install
 COPY . .
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 EXPOSE 3000
-CMD ["bash", "-c", "rails db:create db:migrate && rails server -b 0.0.0.0 -e production"]
+CMD ["bash", "-c", "rails server -b 0.0.0.0 -e production"]
+
 
