@@ -1,4 +1,4 @@
-FROM 156916773321.dkr.ecr.ap-south-1.amazonaws.com/pooja-cicd-app:ruby_base
+FROM ruby-3.3.2-v1
 WORKDIR /app
 COPY Gemfile* ./
 RUN bundle install
